@@ -20,7 +20,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 226, 226, 226)),
       ),
-      home: const SignInPage(title: ""),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SignInPage(title: '',), //change this
+        '/signInPage': (context) => const SignInPage(title: '',),
+        '/addMatchDetails': (context) => const AddMatchDetails(title: ''),
+        }
     );
   }
 }

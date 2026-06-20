@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
+import 'package:tennis_app/services/auth_services.dart';
 
 
 class SignInPage extends StatefulWidget{
@@ -26,7 +27,7 @@ class _SignInPageState extends State<SignInPage>{
               Container(
                 padding: EdgeInsets.fromLTRB(98, 130, 0, 0),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Tennis",
                       style: GoogleFonts.lexend(
@@ -147,7 +148,7 @@ class _SignInPageState extends State<SignInPage>{
                           width: double.infinity,
                           child: FilledButton(
                             onPressed: () {
-                              
+                              loginUser(email, password, context);
                             },
                             style: FilledButton.styleFrom(
                               backgroundColor: const Color.fromARGB(255, 46, 126, 0),
@@ -211,13 +212,14 @@ class _SignInPageState extends State<SignInPage>{
                               ),
                             ),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
 
                                 const SizedBox(width: 50),
 
                                 Image.asset('lib/assets/web_light_rd_na@1x.png'),
 
-                                const SizedBox(width: 20),
+                                const SizedBox(width: 10),
 
                                 Text("Sign In With Google",
                                 textAlign: TextAlign.center,
@@ -226,6 +228,8 @@ class _SignInPageState extends State<SignInPage>{
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w500,)
                                 ),
+
+                                const SizedBox(width: 40),
                               ],
                             )
                           ),
