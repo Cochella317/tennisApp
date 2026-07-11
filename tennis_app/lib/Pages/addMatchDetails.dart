@@ -27,7 +27,7 @@ class _AddMatchDetailsState extends State<AddMatchDetails> {
   int? aces; 
 
 
-  _selectDate(BuildContext context) async {
+  void _selectDate(BuildContext context) async {
   final ThemeData theme = Theme.of(context);
   assert(theme.platform != null);
   switch (theme.platform) {
@@ -119,6 +119,10 @@ String getFinalScore() {
   }
 
   return sets.join(", ");
+}
+
+void checkInput(){
+  
 }
 
 Widget buildSurfaceChips() {
@@ -773,7 +777,9 @@ Widget buildSetRow(String label, int rowNum){
                     height: 50, 
                     width: 250, 
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[200],
                         side: BorderSide(

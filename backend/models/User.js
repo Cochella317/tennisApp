@@ -2,23 +2,23 @@
 
 const db = require('../config/database');
 
-const createUser = (email, hashedPassword, callback) => {
+const createUser = (firstName, lastName, email, hashedPassword, callback) => {
 
     const sql = `
-        INSERT INTO User (email, password)
-        VALUES (?, ?)
+        INSERT INTO User (firstName, lastName, Email, Password)
+        VALUES (?, ?, ?, ?)
     `;
 
     db.query(
         sql,
-        [email, hashedPassword],
+        [firstName, lastName, email, hashedPassword],
         callback
     );
 };
 
 const findUserByEmail = (email, callback) => {
 
-    const sql = `SELECT * FROM User WHERE email = ?`;
+    const sql = `SELECT * FROM User WHERE Email = ?`;
 
     db.query(sql, [email], callback);
 };
