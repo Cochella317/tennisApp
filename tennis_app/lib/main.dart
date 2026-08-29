@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
+import 'package:tennis_app/Pages/homePage.dart';
 import 'package:tennis_app/Pages/registrationPage.dart';
 import 'package:tennis_app/Pages/signInPage.dart';
 import 'Pages/addMatchDetails.dart';
-import 'package:http/http.dart' as http;
 
 
 void main() { 
@@ -23,7 +21,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SignInPage(title: '',), //change this
+        '/': (context) => const SignInPage(title: '',), //change this 
+        'homePage': (context) => const HomePage(title: '',),
         '/signInPage': (context) => const SignInPage(title: '',),
         '/addMatchDetails': (context) => const AddMatchDetails(title: ''),
         '/registrationPage': (context) => const registrationPage(title: ''),

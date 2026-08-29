@@ -54,8 +54,7 @@ const registerUser = (req, res) => {
                 message: err.message
             });
         }
-
-        console.log("Created the user, at this stage");
+        
         //By this point, new user has been created. Now get their user ID 
         User.findUserByEmail(email, async (err, results) => {
 
@@ -87,4 +86,4 @@ const registerUser = (req, res) => {
 module.exports = {
     registerUser,
     loginUser
-    };
+    };  

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
+import 'package:tennis_app/Pages/addMatchDetailsNext.dart';
+import 'package:tennis_app/models/match.dart'; 
 
 
 class AddMatchDetails extends StatefulWidget {
@@ -16,7 +17,8 @@ class AddMatchDetails extends StatefulWidget {
 class _AddMatchDetailsState extends State<AddMatchDetails> {
   DateTime? selectedDate;
   String selectedSurface = "Hard";
-  String opponentName = ""; 
+  String opponentFirstName = ""; 
+  String opponentLastName = ""; 
   String selectedMatchType = "Singles"; 
   List<int?> myScores = List.filled(5, null);
   List<int?> opponentScores = List.filled(5, null);
@@ -25,7 +27,16 @@ class _AddMatchDetailsState extends State<AddMatchDetails> {
   int? unforcedErrors; 
   int? winners; 
   int? aces; 
-
+  int? win; 
+  var match = Match();
+  final dateSnackBar = SnackBar(
+    content: const Text('Please specify a date'),
+    duration: const Duration(seconds: 2),
+  );
+  final firstNameSnackBar = SnackBar(
+    content: const Text('Please specify a first name'),
+    duration: const Duration(seconds: 2),
+  );
 
   void _selectDate(BuildContext context) async {
   final ThemeData theme = Theme.of(context);
@@ -101,11 +112,14 @@ String getMatchResult() {
   }
 
   if (mySetsWon > oppSetsWon) {
+    win = 1; 
     return "Win";
   }
   if (oppSetsWon > mySetsWon){
+    win = 0; 
     return "Loss";
   } 
+  win = 0; 
   return "";
 }
 
@@ -121,7 +135,34 @@ String getFinalScore() {
   return sets.join(", ");
 }
 
+//validates input and sends it to next page
 void checkInput(){
+  if (selectedDate == null){
+    ScaffoldMessenger.of(context).showSnackBar(dateSnackBar);
+  } else if (opponentFirstName == ""){
+    ScaffoldMessenger.of(context).showSnackBar(firstNameSnackBar);
+  }else {
+    match.date = selectedDate!; 
+    match.surface = selectedSurface; 
+    match.opponentFirstName = opponentFirstName; 
+    match.opponentLastName = opponentLastName; 
+    match.matchType = selectedMatchType; 
+    match.score = score;
+    match.firstServePercentage = firstServePercentage as double?; 
+    match.unforcedErrors = unforcedErrors; 
+    match.winners = winners; 
+    match.aces = aces; 
+    match.winOrLoss = win; 
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddMatchDetailsNext(
+          key: null, 
+          title: "",
+          match: match
+        )
+      )
+    );
+  }
   
 }
 
@@ -255,7 +296,6 @@ Widget buildSetRow(String label, int rowNum){
       ],
     ),
   );
-
 }
 
 
@@ -265,527 +305,539 @@ Widget buildSetRow(String label, int rowNum){
       body: Center(
         child: 
           SingleChildScrollView(
-            child: Column(
-              children: [
-                //const SizedBox(height: 50),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.fromLTRB(8.0, 50.0, 0, 8.0),
-                  child: Text("MATCH DETAILS", style: GoogleFonts.lexend(
-                      color: const Color.fromARGB(255, 0, 0, 0), 
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600 
+            child: SizedBox( //this fixes the size of most things on the screen
+              width: 1000, 
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.fromLTRB(8.0, 50.0, 0, 8.0),
+                    child: Text("MATCH DETAILS", style: GoogleFonts.lexend(
+                        color: const Color.fromARGB(255, 0, 0, 0), 
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w600 
+                      )
                     )
-                  )
-                  ), 
-                Card(
-                  elevation: 10,
-                  shadowColor: Colors.black,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-            
-                        // Label
-                        Text("Opponent",
-                          style: GoogleFonts.lexend(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-            
-                        const SizedBox(height: 8),
-            
-                        // TextBox
-                        TextField(
-                          onChanged: (name) {
-                            opponentName = name; 
-                          },
-                          decoration: InputDecoration(
-                            hintText: "Enter opponent name",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
+                    ), 
+                  Card(
+                    elevation: 10,
+                    shadowColor: Colors.black,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+              
+                          // Label
+                          Text("Opponent",
+                            style: GoogleFonts.lexend(
+                              color: Colors.black,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-            
-                        const SizedBox(height: 15),
-            
-                        // Label
-                        Text("Date",
-                          style: GoogleFonts.lexend(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-            
-            
-                        GestureDetector(
-                          onTap: () => _selectDate(context),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 255, 255, 255), 
-                            borderRadius: BorderRadius.circular(15), 
-                            border: Border.all(color: Colors.black, width: 1),
+              
+                          const SizedBox(height: 8),
+              
+                          // TextBox
+                          TextField(
+                            onChanged: (firstName) {
+                              opponentFirstName = firstName; 
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Enter opponent's first name",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today_outlined,
-                                  color: Colors.black,
-                                  size: 24.0,
-                                  semanticLabel: 'Calendar Icon' 
-                                ),
-            
-                                 const SizedBox(width: 10),
-            
-                                Text( selectedDate == null ? "Select a date" : DateFormat('MMM d, y').format(selectedDate!),
-                                style: GoogleFonts.lexend(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
                             ),
-                          )
-                        ),
-            
-                        const SizedBox(height: 15),
-            
-                        // Label
-                        Text("Surface",
-                          style: GoogleFonts.lexend(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
                           ),
-                        ),
-            
-                        buildSurfaceChips(),
-            
-                        const SizedBox(height: 15),
-            
-                        // Label
-                        Text("Match Type",
-                          style: GoogleFonts.lexend(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
+              
+                          const SizedBox(height: 15),
+
+                          TextField(
+                            onChanged: (lastName) {
+                              opponentLastName = lastName; 
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Enter opponent's last name",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                            ),
                           ),
-                        ),
-            
-                      
-                        buildMatchTypeChips(),
-            
-            
-            
-                      ],
+
+                           const SizedBox(height: 15),
+              
+                          // Label
+                          Text("Date",
+                            style: GoogleFonts.lexend(
+                              color: Colors.black,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+              
+              
+                          GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 255, 255, 255), 
+                              borderRadius: BorderRadius.circular(15), 
+                              border: Border.all(color: Colors.black, width: 1),
+                                ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today_outlined,
+                                    color: Colors.black,
+                                    size: 24.0,
+                                    semanticLabel: 'Calendar Icon' 
+                                  ),
+              
+                                   const SizedBox(width: 10),
+              
+                                  Text( selectedDate == null ? "Select a date" : DateFormat('MMM d, y').format(selectedDate!),
+                                  style: GoogleFonts.lexend(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ),
+              
+                          const SizedBox(height: 15),
+              
+                          // Label
+                          Text("Surface",
+                            style: GoogleFonts.lexend(
+                              color: Colors.black,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+              
+                          buildSurfaceChips(),
+              
+                          const SizedBox(height: 15),
+              
+                          // Label
+                          Text("Match Type",
+                            style: GoogleFonts.lexend(
+                              color: Colors.black,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+              
+                        
+                          buildMatchTypeChips(),
+              
+              
+              
+                        ],
+                      ),
                     ),
                   ),
-                ),
-            
-            
-                const SizedBox(height: 15),
-            
-                Card(
-                  elevation: 10,
-                  shadowColor: Colors.black,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.emoji_events_outlined,
-                              color: const Color.fromARGB(255, 46, 126, 0),
-                            ),
-            
-            
-                            const SizedBox(width: 8),
-            
-                            // Label
-                            Text("SCORE",
-                              style: GoogleFonts.lexend(
+              
+              
+                  const SizedBox(height: 15),
+              
+                  Card(
+                    elevation: 10,
+                    shadowColor: Colors.black,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.emoji_events_outlined,
                                 color: const Color.fromARGB(255, 46, 126, 0),
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
                               ),
-                            ),
-                          ]
-            
-                        ),
-            
-                         const SizedBox(height: 20),
-            
-                          // Result (Win/Loss)
-                        Align(
-                          alignment: AlignmentGeometry.xy(0.43, 0),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: getMatchResult() == "Win"
-                                  ? Colors.green[100]
-                                  : getMatchResult() == "Loss"
-                                  ? Colors.red[100]
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(getMatchResult(), 
-                              style: GoogleFonts.lexend(
-                              color: getMatchResult() == "Win"
-                                  ? const Color.fromARGB(255, 46, 126, 0)
-                                  : const Color.fromARGB(255, 126, 46, 0),
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w400,
+              
+              
+                              const SizedBox(width: 8),
+              
+                              // Label
+                              Text("SCORE",
+                                style: GoogleFonts.lexend(
+                                  color: const Color.fromARGB(255, 46, 126, 0),
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ]
+              
+                          ),
+              
+                           const SizedBox(height: 20),
+              
+                            // Result (Win/Loss)
+                          Align(
+                            alignment: AlignmentGeometry.xy(0.43, 0),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: getMatchResult() == "Win"
+                                    ? Colors.green[100]
+                                    : getMatchResult() == "Loss"
+                                    ? Colors.red[100]
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(getMatchResult(), 
+                                style: GoogleFonts.lexend(
+                                color: getMatchResult() == "Win"
+                                    ? const Color.fromARGB(255, 46, 126, 0)
+                                    : const Color.fromARGB(255, 126, 46, 0),
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-            
-                        buildSetRow("Set 1", 0), 
-                        buildSetRow("Set 2", 1),
-                        buildSetRow("Set 3", 2),
-                        buildSetRow("Set 4 (Optional)", 3),
-                        buildSetRow("Set 5 (Optional)", 4),
-            
-                        const SizedBox(height: 25),
-            
-                        // Final score
-                        Row(
-                          children: [
-                            Text("Final Score",
-                              style: GoogleFonts.lexend(
-                                color: Colors.black,
+              
+                          buildSetRow("Set 1", 0), 
+                          buildSetRow("Set 2", 1),
+                          buildSetRow("Set 3", 2),
+                          buildSetRow("Set 4 (Optional)", 3),
+                          buildSetRow("Set 5 (Optional)", 4),
+              
+                          const SizedBox(height: 25),
+              
+                          // Final score
+                          Row(
+                            children: [
+                              Text("Final Score",
+                                style: GoogleFonts.lexend(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+              
+                              const SizedBox(width: 50),
+              
+                              Container(
+                              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: getMatchResult() == "Win"
+                                    ? Colors.green[100]
+                                    : getMatchResult() == "Loss"
+                                    ? Colors.red[100]
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(getFinalScore(), 
+                                style: GoogleFonts.lexend(
+                                color: getMatchResult() == "Win"
+                                    ? const Color.fromARGB(255, 46, 126, 0)
+                                    : const Color.fromARGB(255, 126, 46, 0),
                                 fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
-
-                            const SizedBox(width: 50),
-
-                            Container(
-                            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: getMatchResult() == "Win"
-                                  ? Colors.green[100]
-                                  : getMatchResult() == "Loss"
-                                  ? Colors.red[100]
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(getFinalScore(), 
-                              style: GoogleFonts.lexend(
-                              color: getMatchResult() == "Win"
-                                  ? const Color.fromARGB(255, 46, 126, 0)
-                                  : const Color.fromARGB(255, 126, 46, 0),
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w400,
-                              ),
-                            ),
+                            ],
                           ),
-                          ],
-                        ),
-            
-                      ],
-            
+              
+                        ],
+              
+                      )
                     )
-                  )
-                ),
-
-                const SizedBox(height: 15),
-
-
-                Card(
-                  elevation: 10,
-                  shadowColor: Colors.black,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.bar_chart_sharp,
-                              color: const Color.fromARGB(255, 46, 126, 0),
-                              size: 24.0,
-                              semanticLabel: 'Stats Icon'
-                            
-                            ),
-
-                            const SizedBox(width: 6),
-
-                            Text("QUICK STATS",
-                              style: GoogleFonts.lexend(
+                  ),
+              
+                  const SizedBox(height: 15),
+              
+              
+                  Card(
+                    elevation: 10,
+                    shadowColor: Colors.black,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.bar_chart_sharp,
                                 color: const Color.fromARGB(255, 46, 126, 0),
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
+                                size: 24.0,
+                                semanticLabel: 'Stats Icon'
+                              
                               ),
-                            ),
-
-                            const SizedBox(width: 6),
-
-
-                            Text("(Optional)",
-                              style: GoogleFonts.lexend(
-                                color:  Colors.grey,
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-
-                          ],
-                        ),
-
-                        const SizedBox(height: 25),
-
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.sports_baseball_outlined,
-                              color: const Color.fromARGB(255, 46, 126, 0),
-                              size: 24.0,
-                              semanticLabel: 'Tennis Ball Icon'
-                            ),
-
-                            const SizedBox(width: 10),
-
-                            Text("First Serve %",
-                              style: GoogleFonts.lexend(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                              ), 
-                            ),
-
-                            const SizedBox(width: 80),
-
-                            Expanded(
-                            child: TextField(
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(
-                                decimal: true
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
+              
+                              const SizedBox(width: 6),
+              
+                              Text("QUICK STATS",
+                                style: GoogleFonts.lexend(
+                                  color: const Color.fromARGB(255, 46, 126, 0),
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              onChanged: (value) {
-                                setState(() {
-                                  firstServePercentage = double.tryParse(value);
-                                  });
-                                },
-                              ),
-                            ),
-
-                            const SizedBox(width: 10),
-
-                            Text("%",
-                              style: GoogleFonts.lexend(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                              ), 
-                            ),
-
-                          ],
-                        ),
-
-                        const SizedBox(height: 15),
-
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: const Color.fromARGB(255, 46, 126, 0),
-                              size: 24.0,
-                              semanticLabel: 'Exclamation Icon'
-                            ),
-
-                            const SizedBox(width: 10),
-
-                            Text("Unforced Errors",
-                              style: GoogleFonts.lexend(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                              ), 
-                            ),
-
-                            const SizedBox(width: 60),
-
-                            Expanded(
-                            child: TextField(
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(
-                                decimal: true
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
+              
+                              const SizedBox(width: 6),
+              
+              
+                              Text("(Optional)",
+                                style: GoogleFonts.lexend(
+                                  color:  Colors.grey,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              onChanged: (value) {
-                                setState(() {
-                                  unforcedErrors = int.tryParse(value);
-                                  });
-                                },
+              
+                            ],
+                          ),
+              
+                          const SizedBox(height: 25),
+              
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.sports_baseball_outlined,
+                                color: const Color.fromARGB(255, 46, 126, 0),
+                                size: 24.0,
+                                semanticLabel: 'Tennis Ball Icon'
                               ),
-                            ),
-                            const SizedBox(width: 22),
-                          ],
-                        ),
-
-                        const SizedBox(height: 15),
-
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.star_border,
-                              color: const Color.fromARGB(255, 46, 126, 0),
-                              size: 24.0,
-                              semanticLabel: 'Star Icon'
-                            ),
-
-                            const SizedBox(width: 10),
-
-                            Text("Winners",
-                              style: GoogleFonts.lexend(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                              ), 
-                            ),
-
-                            const SizedBox(width: 123),
-
-                            Expanded(
-                            child: TextField(
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(
-                                decimal: true
+              
+                              const SizedBox(width: 10),
+              
+                              Text("First Serve %",
+                                style: GoogleFonts.lexend(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ), 
                               ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
+              
+                              const SizedBox(width: 80),
+              
+                              Expanded(
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
                                 ),
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  winners = int.tryParse(value);
-                                  });
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 22),
-                          ],
-                        ),
-
-                         const SizedBox(height: 15),
-
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.rocket_launch_outlined,
-                              color: const Color.fromARGB(255, 46, 126, 0),
-                              size: 24.0,
-                              semanticLabel: 'Rocket Icon'
-                            ),
-
-                            const SizedBox(width: 10),
-
-                            Text("Aces",
-                              style: GoogleFonts.lexend(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
-                              ), 
-                            ),
-
-                            const SizedBox(width: 150),
-
-                            Expanded(
-                            child: TextField(
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.numberWithOptions(
-                                decimal: true
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
+                                onChanged: (value) {
+                                  setState(() {
+                                    firstServePercentage = double.tryParse(value);
+                                    });
+                                  },
                                 ),
                               ),
-                              onChanged: (value) {
-                                setState(() {
-                                  aces = int.tryParse(value);
-                                  });
-                                },
+              
+                              const SizedBox(width: 10),
+              
+                              Text("%",
+                                style: GoogleFonts.lexend(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ), 
                               ),
-                            ),
-                            const SizedBox(width: 22),
-                          ],
-                        ),
-
-
-
-
-                      ]
-
-                    ),
-                    
-                  ), 
-
-                ),
-
-                const SizedBox(height: 15),
-            
+              
+                            ],
+                          ),
+              
+                          const SizedBox(height: 15),
+              
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: const Color.fromARGB(255, 46, 126, 0),
+                                size: 24.0,
+                                semanticLabel: 'Exclamation Icon'
+                              ),
+              
+                              const SizedBox(width: 10),
+              
+                              Text("Unforced Errors",
+                                style: GoogleFonts.lexend(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ), 
+                              ),
+              
+                              const SizedBox(width: 60),
+              
+                              Expanded(
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true
+                                ),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    unforcedErrors = int.tryParse(value);
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 22),
+                            ],
+                          ),
+              
+                          const SizedBox(height: 15),
+              
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.star_border,
+                                color: const Color.fromARGB(255, 46, 126, 0),
+                                size: 24.0,
+                                semanticLabel: 'Star Icon'
+                              ),
+              
+                              const SizedBox(width: 10),
+              
+                              Text("Winners",
+                                style: GoogleFonts.lexend(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ), 
+                              ),
+              
+                              const SizedBox(width: 123),
+              
+                              Expanded(
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true
+                                ),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    winners = int.tryParse(value);
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 22),
+                            ],
+                          ),
+              
+                           const SizedBox(height: 15),
+              
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.rocket_launch_outlined,
+                                color: const Color.fromARGB(255, 46, 126, 0),
+                                size: 24.0,
+                                semanticLabel: 'Rocket Icon'
+                              ),
+              
+                              const SizedBox(width: 10),
+              
+                              Text("Aces",
+                                style: GoogleFonts.lexend(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ), 
+                              ),
+              
+                              const SizedBox(width: 150),
+              
+                              Expanded(
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true
+                                ),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    aces = int.tryParse(value);
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 22),
+                            ],
+                          ),
+                        ]
+                      ),  
+                    ), 
+                  ),
+              
+                  const SizedBox(height: 15),
+              
                   SizedBox(
                     height: 50, 
-                    width: 250, 
+                    width: 300, 
                     child: ElevatedButton(
                       onPressed: () {
-
+                        checkInput();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[200],
                         side: BorderSide(
                           color:  Colors.black,
-                           width: 1.0,
-            
+                            width: 1.0,
+                        
                         )
                           ), 
                         child: Text("Next", style: GoogleFonts.lexend(
@@ -795,7 +847,11 @@ Widget buildSetRow(String label, int rowNum){
                       )
                     ),
                   ),
-              ],
+              
+                  const SizedBox(height: 15)
+                    
+                ],
+              ),
             ),
           ) 
       ),

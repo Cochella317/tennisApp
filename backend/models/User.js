@@ -2,6 +2,7 @@
 
 const db = require('../config/database');
 
+//create user in db
 const createUser = (firstName, lastName, email, hashedPassword, callback) => {
 
     const sql = `
@@ -16,6 +17,7 @@ const createUser = (firstName, lastName, email, hashedPassword, callback) => {
     );
 };
 
+//find user by email in db
 const findUserByEmail = (email, callback) => {
 
     const sql = `SELECT * FROM User WHERE Email = ?`;

@@ -5,8 +5,9 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+//contains methods regarding interaction with the server's authentication services
 
-const storage = FlutterSecureStorage();
+final storage = const FlutterSecureStorage();
 
   Future<void> loginUser(String? email, String? password, BuildContext context) async {
 
@@ -61,11 +62,14 @@ void getToken(final response, BuildContext context) async {
     await storage.write(key: 'jwt', value: data['token'],);
 
     //show message of success or failure from server
-    scaffoldMessenger.showSnackBar(SnackBar(content: Text(data['message'])),);
+    scaffoldMessenger.showSnackBar(SnackBar(
+      content: Text(data['message']), 
+      duration: const Duration(seconds: 2),
+      showCloseIcon: true
+      ),);
 
     if (data['token'] != null){
       Navigator.pushNamed(context, '/addMatchDetails');
-
     }
 
 }
