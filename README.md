@@ -1,7 +1,7 @@
 # About 
-This is an application designed to help tennis players organize their training, track their matches, and monitor their improvement over time. 
-The application allows users to create personalized workout plans, browse tennis drills, log match results, and reflect on their performance after each match. 
-By combining training management and match analysis in one place, this application aims to help players identify strengths, improve weaknesses, and stay consistent with their development.
+This is an application designed to track their performance and receive personalized coaching insights. 
+The application allows users to log match results and reflect on their performance after each match. It also allows players to view their analytics (TO-DO) and to receive suggestions on how to improve their performance via AI (TO-DO).   
+Overall, this application aims to help players identify strengths, improve weaknesses, and stay consistent with their development.
 
 # Learning Goals
 This project was created as a way to strengthen my understanding of application development and software engineering concepts. This includes: 
@@ -10,4 +10,4 @@ This project was created as a way to strengthen my understanding of application 
 + Token-Based Authentication
 + Database Design
 + Version Control
-+ Software Architecture (Presentation Layer, Busniess Logic Layer, Database Layer)
++ Software Architecture (Presentation Layer, Business Logic Layer, Database Layer)
